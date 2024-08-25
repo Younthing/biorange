@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "biorange"
+version = "0.1.1"
+description = ""
+authors = ["John Smith <john@example.com>"]
+readme = "README.md"
+
+[tool.poetry.scripts]
+biorange = "biorange.cli.main:app"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+typer = "^0.12.5"
+pyfiglet = "^1.0.2"
+pandas = "^2.2.2"
+playwright = "^1.46.0"
+requests = "^2.32.3"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry-dynamic-versioning]
+enable = true

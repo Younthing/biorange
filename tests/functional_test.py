@@ -1,9 +1,16 @@
 from typer.testing import CliRunner
-from biorange.__main__ import app
+from biorange.cli.main import app
 
 runner = CliRunner()
 
-def test_biorange_prints_helloworld():
-    result = runner.invoke(app)
-    assert result.exit_code == 0
-    assert result.output.strip() == "helloworld"
+
+## 运行biorange analyz ppi
+
+
+# PPI ANALYSIS
+def test_ppi_analysis():
+    result = runner.invoke(
+        app,
+        ["analyze", "ppi"],
+    )
+    assert "PPI analysis completed." in result.output
