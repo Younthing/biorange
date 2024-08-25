@@ -1,5 +1,9 @@
-import subprocess
+from typer.testing import CliRunner
+from biorange.__main__ import app
+
+runner = CliRunner()
 
 def test_biorange_prints_helloworld():
-    result = subprocess.run(['python', '-m', 'biorange'], capture_output=True, text=True)
-    assert result.stdout.strip() == "helloworld"
+    result = runner.invoke(app)
+    assert result.exit_code == 0
+    assert result.output.strip() == "helloworld"
