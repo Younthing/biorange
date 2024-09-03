@@ -14,7 +14,7 @@ handlers:
   file:
     class: logging.handlers.TimedRotatingFileHandler # 时间轮转文件处理器，日志将输出到文件并按时间轮转
     formatter: standard # 使用上面定义的格式化器
-    filename: ".log/biorange.log" # 日志文件名，保存在 .log 文件夹中
+    filename: ".logs/biorange.log" # 日志文件名，保存在 .logs 文件夹中
     when: "midnight" # 每天午夜轮转日志文件
     interval: 1 # 轮转时间间隔为1天
     backupCount: 30 # 保留最近30个日志文件
