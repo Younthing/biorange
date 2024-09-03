@@ -36,5 +36,26 @@ def main(
         raise typer.Exit()
 
 
+from biorange.core.config.config_loader import ConfigLoader
+from biorange.core.config.config_manager import ConfigManager
+
+
+@app.command()
+def run(
+    api_key: str = typer.Option(None, help="API 密钥"),
+    database_url: str = typer.Option(None, help="数据库 URL"),
+):
+    cli_args = {"api_key": api_key, "database_url": database_url}
+
+    config_loader = ConfigLoader()
+    config_manager = ConfigManager(cli_args=cli_args, config_loader=config_loader)
+
+    final_api_key = config_manager.get("api_key")
+    final_database_url = config_manager.get("database_url")
+
+    typer.echo(f"API Key: {final_api_key}")
+    typer.echo(f"Database URL: {final_database_url}")
+
+
 if __name__ == "__main__":
     app()

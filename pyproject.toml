@@ -16,6 +16,8 @@ pandas = "^2.2.2"
 playwright = "^1.46.0"
 requests = "^2.32.3"
 pyyaml = "^6.0.2"
+python-dotenv = "^1.0.1"
+pydantic = "^2.8.2"
 
 
 [tool.poetry.group.dev.dependencies]
