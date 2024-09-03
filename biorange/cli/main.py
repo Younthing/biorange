@@ -1,7 +1,10 @@
 from typing import Optional
+
 import typer
+
 from biorange import __version__
-from .command import prepare, analyze
+
+from .command import analyze, prepare
 
 # 初始化 Typer 应用，设置无参数时自动显示帮助信息
 app = typer.Typer(

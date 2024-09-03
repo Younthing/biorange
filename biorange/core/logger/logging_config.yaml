@@ -1,0 +1,31 @@
+version: 1 # 配置文件版本，必须为1
+disable_existing_loggers: False # 是否禁用现有的日志记录器，默认为False
+
+formatters:
+  standard:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s" # 定义日志输出格式，包括时间、日志名称、日志级别和日志消息
+
+handlers:
+  console:
+    class: logging.StreamHandler # 控制台输出处理器，日志将输出到控制台
+    formatter: standard # 使用上面定义的格式化器
+    level: INFO # 控制台日志级别设置为INFO
+
+  file:
+    class: logging.handlers.TimedRotatingFileHandler # 时间轮转文件处理器，日志将输出到文件并按时间轮转
+    formatter: standard # 使用上面定义的格式化器
+    filename: ".log/biorange.log" # 日志文件名，保存在 .log 文件夹中
+    when: "midnight" # 每天午夜轮转日志文件
+    interval: 1 # 轮转时间间隔为1天
+    backupCount: 30 # 保留最近30个日志文件
+    level: DEBUG # 文件日志级别设置为DEBUG
+
+loggers:
+  uvicorn:
+    handlers: [console, file] # 为自定义日志记录器uvicorn配置的处理器
+    level: DEBUG # 日志级别为DEBUG及以上
+    propagate: False # 不向上传播到父记录器
+
+root:
+  handlers: [console, file] # 为根日志记录器配置的处理器
+  level: DEBUG # 日志级别为DEBUG及以上
