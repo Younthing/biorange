@@ -1,0 +1,17 @@
+{
+  "python.testing.pytestArgs": ["tests"],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "redisXplorer.config": {
+    "profiles": [
+      {
+        "name": "liuyan",
+        "host": "127.0.0.1",
+        "accessKey": "",
+        "filter": "*",
+        "port": "6379"
+      }
+    ],
+    "scanLimit": 200
+  }
+}

@@ -3,7 +3,9 @@ from typing import Optional
 import typer
 
 from biorange import __version__
-from biorange.core.config.config_manager import ConfigManager
+from biorange.core.config.config_manager import (
+    ConfigManager,
+)  # TODO 记得使用依赖注入代替实例化，解耦
 
 from .command import analyze, prepare
 from .helpers import process_parameters  # 导入参数处理函数
@@ -21,7 +23,7 @@ app.add_typer(analyze.app, name="analyze")
 
 # 回调函数，用于处理全局选项和显示帮助信息
 @app.callback(invoke_without_command=True, help="BioRange 命令行工具 made in china")
-def main(
+def callback(
     version: Optional[bool] = typer.Option(
         None, "--version", "-v", help="显示版本号并退出"
     ),
@@ -41,6 +43,21 @@ def run(
 ):
     config_manager = process_parameters(ctx, env, config)
     progress(config_manager)
+
+
+from biorange.cli.dependence import run_analysis
+
+
+@app.command(
+    context_settings={"allow_extra_args": True, "ignore_unknown_options": True}
+)
+def netparam(
+    ctx: typer.Context,
+    env: Optional[str] = typer.Option(None, help="环境配置文件路径"),
+    config: Optional[str] = typer.Option(None, help="配置文件路径"),
+):
+    config_manager = process_parameters(ctx, env, config)
+    run_analysis(config_manager)
 
 
 def progress(config_manager: ConfigManager):
