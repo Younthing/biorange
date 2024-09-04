@@ -20,7 +20,7 @@ class ComponentFinder:
         self.max_workers = max_workers
         self.logger = get_logger("component_finder")
 
-    def find_components(self, drug_names: str | List[str]) -> pd.DataFrame:
+    def execute(self, drug_names: str | List[str]) -> pd.DataFrame:
         all_components = []
         if isinstance(drug_names, str):
             drug_names = [drug_names]
@@ -67,7 +67,7 @@ class SmilesTargetPredictor:
         self.max_workers = max_workers
         self.logger = get_logger("target_predictor")
 
-    def predict_targets(self, components: pd.DataFrame) -> pd.DataFrame:
+    def execute(self, components: pd.DataFrame) -> pd.DataFrame:
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             futures = [
                 executor.submit(self._predict_component_targets, component)
@@ -112,7 +112,7 @@ class DiseaseTargetFinder:
         self.max_workers = max_workers
         self.logger = get_logger("disease_target_finder")
 
-    def find_disease_targets(self, disease_name: str) -> pd.DataFrame:
+    def execute(self, disease_name: str) -> pd.DataFrame:
         cache_key = f"disease_targets_{disease_name}"
         cached_data = self.cache_manager.get(cache_key)
         if cached_data is not None:
@@ -165,14 +165,19 @@ if __name__ == "__main__":
     drug_name = ["大枣", "人参"]
     disease_name = "Lung cancer"
 
+    # 定义结果目录
+    from pathlib import Path
+
+    results_dir = Path("results")
+
     # Step 1: Find Components
-    components = component_finder.find_components(drug_name)
-    components.to_csv(f"results/components_.csv", index=False)
+    components = component_finder.execute(drug_name)
+    components.to_csv(results_dir / "components_.csv", index=False)
 
     # Step 2: Predict Targets
-    targets = target_predictor.predict_targets(components)
-    targets.to_csv(f"results/targets_.csv", index=False)
+    targets = target_predictor.execute(components)
+    targets.to_csv(results_dir / "targets_.csv", index=False)
 
     # Step 3: Find Disease Targets
-    disease_targets = disease_target_finder.find_disease_targets(disease_name)
-    disease_targets.to_csv(f"results/disease_targets_.csv", index=False)
+    disease_targets = disease_target_finder.execute(disease_name)
+    disease_targets.to_csv(results_dir / "disease_targets_.csv", index=False)
