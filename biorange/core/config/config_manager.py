@@ -16,54 +16,49 @@ Usage:
 
 from typing import Dict, Optional
 
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ValidationError
 
 from biorange.core.config.config_loader import ConfigLoader
-
-
-class APISettings(BaseModel):
-    """
-    API 设置类，定义了 API 相关的配置参数。
-
-    Args:
-        key (str): API 密钥，默认值为 "default_api_key"。
-        url (str): API URL，默认值为 "https://api.default.com"。
-    """
-
-    key: str = Field("default_api_key", description="API 密钥")
-    url: str = Field("https://api.default.com", description="API URL")
-
-
-class DatabaseSettings(BaseModel):
-    """
-    数据库设置类，定义了数据库相关的配置参数。
-
-    Args:
-        url (str): 数据库 URL，默认值为 "default_database_url"。
-        pool_size (int): 数据库连接池大小，默认值为 5。
-    """
-
-    url: str = Field("default_database_url", description="数据库 URL")
-    pool_size: int = Field(5, description="数据库连接池大小")
-
-
-class Settings(BaseModel):
-    """
-    配置设置类，定义了应用程序的各种配置参数。
-
-    Args:
-        api (APISettings): API 相关的配置参数。
-        database (DatabaseSettings): 数据库相关的配置参数。
-    """
-
-    api: APISettings = Field(default_factory=APISettings)
-    database: DatabaseSettings = Field(default_factory=DatabaseSettings)
+from biorange.core.config.config_model import Settings
 
 
 class ConfigManager:
+    """
+    ConfigManager类用于管理配置设置，支持从默认值、配置文件、环境变量和命令行参数中加载配置，并根据优先级进行合并。
+
+    配置优先级（从低到高）：
+    1. 默认值
+    2. 配置文件值
+    3. 环境变量值
+    4. 命令行参数
+
+    Attributes:
+        cli_args (dict[str, str]): 命令行参数字典。
+        config_loader (ConfigLoader): 用于加载配置的ConfigLoader实例。
+        config_file_values (dict): 从配置文件加载的配置值。
+        env_values (dict): 从环境变量加载的配置值。
+        settings (Settings): 验证后的最终配置设置。
+
+    Methods:
+        get(key: str) -> str:
+            获取指定配置键的值。
+    """
+
     def __init__(
-        self, cli_args: dict[str, str] = None, config_loader: ConfigLoader = None
+        self,
+        cli_args: dict[str, str] | None = None,
+        config_loader: ConfigLoader | None = None,
     ):
+        """
+        初始化ConfigManager实例。
+
+        Args:
+            cli_args: 命令行参数字典，默认为None。
+            config_loader: ConfigLoader实例，默认为None。
+
+        Returns:
+            None
+        """
         self.cli_args = cli_args or {}
         self.config_loader = config_loader or ConfigLoader()
 
@@ -73,6 +68,14 @@ class ConfigManager:
         self.settings = self._validate_settings()
 
     def _validate_settings(self) -> Settings:
+        """
+        验证并合并配置设置。
+
+        将默认设置、配置文件值、环境变量值和命令行参数按优先级顺序合并，并返回验证后的Settings实例。
+
+        Returns:
+            Settings: 验证后的配置设置实例。
+        """
         config = {
             **self._defaults(),
             **self.config_file_values,
@@ -83,12 +86,27 @@ class ConfigManager:
             return Settings(**config)
         except ValidationError as e:
             print("配置验证错误:", e)
-            return Settings()  # Settings(**self._defaults())
+            return Settings()
 
     def _defaults(self) -> dict[str, str]:
+        """
+        获取默认配置设置。
+
+        Returns:
+            dict[str, str]: 默认配置设置字典。
+        """
         return {key: field.default for key, field in Settings.model_fields.items()}
 
     def get(self, key: str) -> str:
+        """
+        获取指定配置键的值。
+
+        Args:
+            key: 要获取的配置键。
+
+        Returns:
+            str: 指定配置键的值。如果键不存在，返回空字符串。
+        """
         return getattr(self.settings, key, "")
 
 
