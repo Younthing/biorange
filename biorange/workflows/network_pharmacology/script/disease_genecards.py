@@ -3,18 +3,38 @@ import os
 import pandas as pd
 from playwright.sync_api import sync_playwright
 
+from biorange.core.logger import get_logger
+from biorange.core.utils.package_fileload import get_data_file_path
+
+logger = get_logger(__name__)
+
 
 class GenecardsDiseaseScraper:
     def __init__(
         self,
         user_data_dir="./User Data",
-        download_path="./data/GeneCards-SearchResults.csv",
+        download_path=None,
     ):
         self.user_data_dir = user_data_dir
-        self.download_path = download_path
+        default_path = "data/GeneCards-SearchResults.csv"
+        self.download_path = (
+            download_path
+            or (
+                not os.path.exists(default_path)
+                and get_data_file_path("GeneCards-SearchResults.csv")
+            )
+            or default_path
+        )
+
         self.playwright = None
         self.browser_context = None
         self.page = None
+
+        if self.download_path == get_data_file_path("GeneCards-SearchResults.csv"):
+            # 警告，
+            logger.error(
+                "不可使用默认文件，你需要自行下载genecards结果文件放入：data/GeneCards-SearchResults.csv"
+            )
 
         # 检查本地文件是否存在，如果存在则不启动Playwright
         if not os.path.exists(self.download_path):
