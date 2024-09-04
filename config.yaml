@@ -1,0 +1,7 @@
+settings:
+  api:
+    key: "your_api_key"
+    url: "https://api.example.com"
+  database:
+    url: "postgresql://user:password@localhost/dbname"
+    pool_size: 10
