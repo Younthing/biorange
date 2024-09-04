@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 
 from biorange.core.logger import get_logger
+from biorange.core.utils.package_fileload import get_data_file_path
 
 logger = get_logger(__name__)
 
@@ -181,8 +182,8 @@ class TCMSPComponentLocalScraper:
                 data = self.convert_to_dataframe(data)
                 logger.info("数据已成功提取并转换为DataFrame")
 
-                logger.info("合并本地数据data/TCMSP_mol.csv")
-                csv_table = pd.read_csv("data/TCMSP_mol.csv")
+                logger.info(f"合并离线数据{get_data_file_path('TCMSP_mol.csv')}")
+                csv_table = pd.read_csv(get_data_file_path("TCMSP_mol.csv"))
                 data = pd.merge(
                     data["MOL_ID"],
                     csv_table,

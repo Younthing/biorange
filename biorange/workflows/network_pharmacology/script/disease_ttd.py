@@ -1,10 +1,12 @@
 import pandas as pd
 
+from biorange.core.utils.package_fileload import get_data_file_path
+
 
 class TTDDiseaseScraper:
 
-    def __init__(self, file_path="data/TTD_combinez_data.csv"):
-        self.df = pd.read_csv(file_path)
+    def __init__(self, file_path="TTD_combinez_data.csv"):
+        self.df = pd.read_csv(get_data_file_path(file_path))
 
     def search(self, diseases):
         # 如果输入是字符串，则将其转换为包含一个元素的列表

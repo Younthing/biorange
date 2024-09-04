@@ -1,17 +1,16 @@
 import pandas as pd
 
 from biorange.core.logger import get_logger
+from biorange.core.utils.package_fileload import get_data_file_path
 
 logger = get_logger(__name__)
 
 
 class TCMSPTargetScraper:
-    def __init__(
-        self, molecules_csv="data/TCMSP_mol.csv", targets_csv="data/TCMSP_tar.csv"
-    ):
+    def __init__(self, molecules_csv="TCMSP_mol.csv", targets_csv="TCMSP_tar.csv"):
         logger.info("Initializing MoleculeSearcher")
-        self.molecules_df = pd.read_csv(molecules_csv)
-        self.targets_df = pd.read_csv(targets_csv)
+        self.molecules_df = pd.read_csv(get_data_file_path(molecules_csv))
+        self.targets_df = pd.read_csv(get_data_file_path(targets_csv))
         self.merged_df = self._merge_dataframes()
 
     def _merge_dataframes(self):

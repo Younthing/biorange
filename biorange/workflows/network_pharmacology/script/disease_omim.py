@@ -1,13 +1,15 @@
 import pandas as pd
 
+from biorange.core.utils.package_fileload import get_data_file_path
+
 
 class OmimDiseaseScraper:
 
     def __init__(
         self,
-        file_path="data/morbidmap.txt",
+        file_path="morbidmap.txt",
     ):
-        self.df = pd.read_table(file_path)
+        self.df = pd.read_table(get_data_file_path(file_path))
 
     def search(self, phenotypes):
         # 如果输入是字符串，则将其转换为包含一个元素的列表
