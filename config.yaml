@@ -5,3 +5,10 @@ settings:
   database:
     url: "postgresql://user:password@localhost/dbname"
     pool_size: 10
+###
+disease_name: Lung cancer
+drug_name:
+  - 大枣
+  - 人参
+  - 陈皮
+results_dir: results

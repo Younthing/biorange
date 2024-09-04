@@ -44,7 +44,7 @@ def run_analysis(config_manager):
     # 从配置中获取参数
     drug_name: List[str] = config_manager.settings.drug_name
     disease_name: str = config_manager.settings.disease_name
-    results_dir: Path = config_manager.settings.results_dir
+    results_dir: Path = Path(config_manager.settings.results_dir)
 
     # 确保结果目录存在
     results_dir.mkdir(parents=True, exist_ok=True)
@@ -55,7 +55,7 @@ def run_analysis(config_manager):
         "disease_name": disease_name,
         "results_dir": str(results_dir),
     }
-    with open(results_dir / "config.yaml", "w", encoding="utf-8") as config_file:
+    with open(results_dir / "config.yaml", "wt", encoding="utf-8") as config_file:
         yaml.dump(config_data, config_file, allow_unicode=True)
 
     # Step 1: Find Components

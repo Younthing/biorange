@@ -1,7 +1,5 @@
 """定义参数字段，需要用到的参数都放这里"""
 
-from pathlib import Path
-
 from pydantic import BaseModel, Field
 
 
@@ -42,11 +40,9 @@ class Settings(BaseModel):
 
     api: APISettings = Field(default_factory=APISettings)
     database: DatabaseSettings = Field(default_factory=DatabaseSettings)
-    drug_name: list[str] = Field(
-        default_factory=lambda: ["大枣", "人参"], description="药物名称列表"
-    )
-    disease_name: str = Field(default="Lung cancer", description="疾病名称")
-    results_dir: Path = Field(default=Path("results"), description="结果目录")
+    drug_name: list[str] = Field(default=[], description="药物名称列表")
+    disease_name: str = Field(default="", description="疾病名称")
+    results_dir: str = Field(default="results", description="结果目录")
 
 
 # 示例用法

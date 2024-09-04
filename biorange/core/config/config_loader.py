@@ -62,9 +62,9 @@ class ConfigLoader:
         """
         try:
             if os.path.exists(self.config_file):
-                with open(self.config_file, "r", encoding="utf-8") as file:
+                with open(self.config_file, "rt", encoding="utf-8") as file:
                     config = yaml.safe_load(file) or {}
-                    return config.get("settings", {})
+                    return config
             else:
                 return {}
         except yaml.YAMLError as e:
