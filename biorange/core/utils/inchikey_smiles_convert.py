@@ -83,6 +83,6 @@ def merge_csv_files(file_pattern: str, output_file: str):
 
 
 if __name__ == "__main__":
-    process_csv("data/merged_mol.csv", "data/mol2.csv", max_workers=50)
+    process_csv("data/TCMSP_mol.csv", "data/mol2.csv", max_workers=50)
 
-    merge_csv_files("data/mol*.csv", "data/merged_mol.csv")
+    merge_csv_files("data/mol*.csv", "data/TCMSP_mol.csv")

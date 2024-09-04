@@ -181,8 +181,8 @@ class TCMSPComponentLocalScraper:
                 data = self.convert_to_dataframe(data)
                 logger.info("数据已成功提取并转换为DataFrame")
 
-                logger.info("合并本地数据data/merged_mol.csv")
-                csv_table = pd.read_csv("data/merged_mol.csv")
+                logger.info("合并本地数据data/TCMSP_mol.csv")
+                csv_table = pd.read_csv("data/TCMSP_mol.csv")
                 data = pd.merge(
                     data["MOL_ID"],
                     csv_table,
