@@ -11,6 +11,7 @@
 """
 
 import os
+from typing import Optional
 
 import yaml
 from dotenv import load_dotenv
@@ -27,9 +28,13 @@ class ConfigLoader:
         load_config_file: 加载 YAML 配置文件中的变量。
     """
 
-    def __init__(self, env_file: str = ".env", config_file: str = "config.yaml"):
-        self.env_file = env_file
-        self.config_file = config_file
+    def __init__(
+        self,
+        env_file: Optional[str] = None,
+        config_file: Optional[str] = None,
+    ):
+        self.env_file = env_file or ".env"
+        self.config_file = config_file or "config.yaml"
 
     def load_env_vars(self) -> dict[str, str | None]:
         """加载环境变量。

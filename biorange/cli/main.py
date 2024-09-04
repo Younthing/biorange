@@ -3,6 +3,8 @@ from typing import Optional
 import typer
 
 from biorange import __version__
+from biorange.core.config.config_loader import ConfigLoader
+from biorange.core.config.config_manager import ConfigManager
 
 from .command import analyze, prepare
 
@@ -36,25 +38,39 @@ def main(
         raise typer.Exit()
 
 
-from biorange.core.config.config_loader import ConfigLoader
-from biorange.core.config.config_manager import ConfigManager
-
-
-@app.command()
+@app.command(
+    context_settings={"allow_extra_args": True, "ignore_unknown_options": True}
+)
 def run(
-    api_key: str = typer.Option(None, help="API 密钥"),
-    database_url: str = typer.Option(None, help="数据库 URL"),
+    ctx: typer.Context,
+    env: Optional[str] = typer.Option(None, help="环境配置文件路径"),
+    config: Optional[str] = typer.Option(None, help="配置文件路径"),
 ):
-    cli_args = {"api_key": api_key, "database_url": database_url}
 
-    config_loader = ConfigLoader()
+    cli_args = {}
+
+    args = iter(ctx.args)
+    for arg in args:
+        if arg.startswith("--"):
+            key = arg.lstrip("--")
+            try:
+                value = next(args)
+                if value.startswith("--"):
+                    raise ValueError(f"Value for {key} is missing.")
+                cli_args[key] = value
+            except StopIteration as exc:
+                typer.echo(f"Value for {key} is missing.")
+                raise typer.Exit(code=1) from exc
+        else:
+            typer.echo(f"Invalid argument format: {arg}")
+            raise typer.Exit(code=1)
+
+    config_loader = ConfigLoader(env_file=env, config_file=config)
     config_manager = ConfigManager(cli_args=cli_args, config_loader=config_loader)
 
-    final_api_key = config_manager.get("api_key")
-    final_database_url = config_manager.get("database_url")
-
-    typer.echo(f"API Key: {final_api_key}")
-    typer.echo(f"Database URL: {final_database_url}")
+    for key in cli_args:
+        final_value = config_manager.get(key)
+        typer.echo(f"{key}: {final_value}")
 
 
 if __name__ == "__main__":

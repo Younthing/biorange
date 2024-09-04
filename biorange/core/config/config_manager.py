@@ -14,7 +14,7 @@ Usage:
     api_key = config_manager.get("api_key")
 """
 
-from typing import Dict, Optional
+from typing import Dict
 
 from pydantic import ValidationError
 
@@ -80,7 +80,7 @@ class ConfigManager:
             **self._defaults(),
             **self.config_file_values,
             **self.env_values,
-            **self.cli_args,
+            **self._parse_cli_args(self.cli_args),
         }
         try:
             return Settings(**config)
@@ -88,7 +88,7 @@ class ConfigManager:
             print("配置验证错误:", e)
             return Settings()
 
-    def _defaults(self) -> dict[str, str]:
+    def _defaults(self) -> Dict[str, str]:
         """
         获取默认配置设置。
 
@@ -97,7 +97,26 @@ class ConfigManager:
         """
         return {key: field.default for key, field in Settings.model_fields.items()}
 
-    def get(self, key: str) -> str:
+    def _parse_cli_args(self, cli_args: Dict[str, str]) -> Dict[str, str]:
+        """
+        解析命令行参数中的嵌套键，并将其合并到配置字典中。
+
+        Args:
+            cli_args: 命令行参数字典。
+
+        Returns:
+            dict[str, str]: 解析后的命令行参数字典。
+        """
+        parsed = {}
+        for key, value in cli_args.items():
+            keys = key.split(".")
+            d = parsed
+            for k in keys[:-1]:
+                d = d.setdefault(k, {})
+            d[keys[-1]] = value
+        return parsed
+
+    def get(self, key: str) -> str | Settings:
         """
         获取指定配置键的值。
 
@@ -107,33 +126,8 @@ class ConfigManager:
         Returns:
             str: 指定配置键的值。如果键不存在，返回空字符串。
         """
-        return getattr(self.settings, key, "")
-
-
-# 或者，如果你希望返回 None 而不是空字符串，可以这样修改返回类型声明：
-# def get(self, key: str) -> Optional[str]:
-#     """
-#     获取指定配置参数的值。
-#
-#     Args:
-#         key (str): 配置参数的键。
-#
-#     Returns:
-#         Optional[str]: 配置参数的值。如果配置参数不存在，则返回 None。
-#     """
-#     return getattr(self.settings, key, None)
-
-
-# # core/business_logic.py 业务函数举例
-# from core.config.config_manager import ConfigManager
-
-# def perform_business_logic(config_manager: ConfigManager):
-#     api_key = config_manager.settings.api.key
-#     api_url = config_manager.settings.api.url
-#     database_url = config_manager.settings.database.url
-#     pool_size = config_manager.settings.database.pool_size
-
-#     # 业务逻辑
-#     print(f"Using API Key: {api_key}")
-#     print(f"Connecting to API at: {api_url}")
-#     print(f"Connecting to Database at: {database_url} with pool size: {pool_size}")
+        keys = key.split(".")
+        value = self.settings
+        for k in keys:
+            value = getattr(value, k, "")
+        return value
