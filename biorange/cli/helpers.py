@@ -1,4 +1,10 @@
+from typing import Dict, Optional
+
 import pandas as pd
+import typer
+
+from biorange.core.config.config_loader import ConfigLoader
+from biorange.core.config.config_manager import ConfigManager
 
 
 def common_read(file_path):
@@ -29,3 +35,41 @@ def common_read(file_path):
 
     # 只保留第一列,并将其转换为列表
     return data.iloc[:, 0].tolist()
+
+
+def process_parameters(
+    ctx: typer.Context, env: Optional[str], config: Optional[str]
+) -> ConfigManager:
+    """
+    处理命令行参数并返回配置管理器。
+
+    Args:
+        ctx (typer.Context): Typer上下文对象，包含命令行参数和其他上下文信息。
+        env (Optional[str]): 环境配置文件路径。
+        config (Optional[str]): 配置文件路径。
+
+    Returns:
+        ConfigManager: 配置管理器对象。
+    """
+    cli_args: Dict[str, str] = {}
+
+    args = iter(ctx.args)
+    for arg in args:
+        if arg.startswith("--"):
+            key = arg.lstrip("--")
+            try:
+                value = next(args)
+                if value.startswith("--"):
+                    raise ValueError(f"Value for {key} is missing.")
+                cli_args[key] = value
+            except StopIteration as exc:
+                typer.echo(f"Value for {key} is missing.")
+                raise typer.Exit(code=1) from exc
+        else:
+            typer.echo(f"Invalid argument format: {arg}")
+            raise typer.Exit(code=1)
+
+    config_loader = ConfigLoader(env_file=env, config_file=config)
+    config_manager = ConfigManager(cli_args=cli_args, config_loader=config_loader)
+
+    return config_manager

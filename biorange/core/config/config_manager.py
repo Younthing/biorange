@@ -10,8 +10,13 @@ Classes:
 Usage:
     from config_manager import ConfigManager
 
-    config_manager = ConfigManager(cli_args={"api_key": "my_api_key"})
-    api_key = config_manager.get("api_key")
+    config_manager = ConfigManager()
+
+    api_key = config_manager.settings.api.key
+    api_url = config_manager.settings.api.url
+    database_url = config_manager.settings.database.url
+    pool_size = config_manager.settings.database.pool_size
+
 """
 
 from typing import Dict

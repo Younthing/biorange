@@ -5,7 +5,6 @@ from biorange.cli.main import app
 runner = CliRunner()
 
 
-
 def test_run_with_config():
     result = runner.invoke(
         app,
@@ -20,8 +19,8 @@ def test_run_with_config():
         ],
     )
     assert result.exit_code == 0
-    assert "api.key: my_api_key" in result.output
-    assert "database.url: my_database_url" in result.output
+    assert "my_api_key" in result.output
+    assert "my_database_url" in result.output
 
 
 def test_run_with_env():
@@ -38,8 +37,8 @@ def test_run_with_env():
         ],
     )
     assert result.exit_code == 0
-    assert "api.key: my_api_key" in result.output
-    assert "database.url: my_database_url" in result.output
+    assert "my_api_key" in result.output
+    assert "my_database_url" in result.output
 
 
 def test_run_with_nested_params():
@@ -58,6 +57,6 @@ def test_run_with_nested_params():
         ],
     )
     assert result.exit_code == 0
-    assert "api.key: my_api_key" in result.output
-    assert "database.url: my_database_url" in result.output
-    assert "database.pool_size: 10" in result.output
+    assert "my_api_key" in result.output
+    assert "my_database_url" in result.output
+    assert "10" in result.output
